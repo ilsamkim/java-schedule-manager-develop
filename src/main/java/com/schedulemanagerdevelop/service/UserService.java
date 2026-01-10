@@ -21,16 +21,32 @@ public class UserService {
     // 저장
     @Transactional
     public CreateUserResponse save(CreateUserRequest request) {
+        // 비밀번호 길이 검증
+        validatePassword(request.getPassword());
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+        }
+
         User user = new User(
                 request.getUsername(),
-                request.getEmail()
+                request.getEmail(),
+                request.getPassword()
         );
+
         User savedUser = userRepository.save(user);
         return new CreateUserResponse(
                 savedUser.getId(),
                 savedUser.getUsername(),
                 savedUser.getEmail()
         );
+    }
+
+    // 비밀번호 유효성 검사
+    private void validatePassword(String password) {
+        if (password == null || password.length() < 8) {
+            throw new IllegalArgumentException("비밀번호는 8글자 이상이어야 합니다.");
+        }
     }
 
     // 단건 조회
@@ -64,12 +80,15 @@ public class UserService {
     // 업데이트
     @Transactional
     public UpdateUserResponse update(Long userId, UpdateUserRequest request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
-        user.update(
-                request.getUsername(),
-                request.getEmail()
-        );
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+
+        if (request.getEmail() != null &&
+                !user.getEmail().equals(request.getEmail()) &&
+                userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+        }
+
+        user.update(request.getUsername(), request.getEmail());
 
         return new UpdateUserResponse(
                 user.getId(),
