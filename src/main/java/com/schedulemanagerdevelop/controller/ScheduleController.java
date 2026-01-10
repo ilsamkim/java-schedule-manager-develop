@@ -38,7 +38,7 @@ public class ScheduleController {
 
     // 업데이트
     @PutMapping("/schedules/{scheduleId}")
-    public ResponseEntity<UpdateScheduleResponse> update(
+    public ResponseEntity<UpdateScheduleResponse> updateSchedules(
             @PathVariable Long scheduleId,
             @RequestBody UpdateScheduleRequest request) {
         UpdateScheduleResponse result = scheduleService.update(scheduleId, request);
@@ -47,7 +47,7 @@ public class ScheduleController {
 
     // 삭제
     @DeleteMapping("/schedules/{scheduleId}")
-    public ResponseEntity<Void> delete(@PathVariable Long scheduleId) {
+    public ResponseEntity<Void> deleteSchedules(@PathVariable Long scheduleId) {
         scheduleService.delete(scheduleId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

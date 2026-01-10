@@ -2,7 +2,9 @@ package com.schedulemanagerdevelop.service;
 
 import com.schedulemanagerdevelop.dto.*;
 import com.schedulemanagerdevelop.entity.Schedule;
+import com.schedulemanagerdevelop.entity.User;
 import com.schedulemanagerdevelop.repository.ScheduleRepository;
+import com.schedulemanagerdevelop.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,33 +17,40 @@ import java.util.List;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
+    private final UserRepository userRepository;
 
     // 저장
     @Transactional
     public CreateScheduleResponse save(CreateScheduleRequest request) {
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+
         Schedule schedule = new Schedule(
-                request.getName(),
+                user,
                 request.getTitle(),
                 request.getContent()
         );
         Schedule savedSchedule = scheduleRepository.save(schedule);
+
         return new CreateScheduleResponse(
                 savedSchedule.getId(),
-                savedSchedule.getName(),
+                savedSchedule.getUser().getId(),
+                savedSchedule.getUser().getUsername(),
                 savedSchedule.getTitle(),
                 savedSchedule.getContent()
         );
     }
 
-    // 단 건 조회
+    // 단건 조회
     @Transactional(readOnly = true)
     public GetOneScheduleResponse getOne(Long scheduleId){
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 일정입니다.")
-        );
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 일정입니다."));
+
         return new GetOneScheduleResponse(
                 schedule.getId(),
-                schedule.getName(),
+                schedule.getUser().getId(),
+                schedule.getUser().getUsername(),
                 schedule.getTitle(),
                 schedule.getContent()
         );
@@ -54,13 +63,14 @@ public class ScheduleService {
 
         List<GetOneScheduleResponse> dtos = new ArrayList<>();
         for (Schedule schedule : schedules) {
-            GetOneScheduleResponse dot = new GetOneScheduleResponse(
+            GetOneScheduleResponse dto = new GetOneScheduleResponse(
                     schedule.getId(),
-                    schedule.getName(),
+                    schedule.getUser().getId(),
+                    schedule.getUser().getUsername(),
                     schedule.getTitle(),
                     schedule.getContent()
             );
-            dtos.add(dot);
+            dtos.add(dto);
         }
         return dtos;
     }
@@ -73,13 +83,14 @@ public class ScheduleService {
         );
 
         schedule.update(
-                request.getName(),
                 request.getTitle(),
                 request.getContent()
         );
+
         return new UpdateScheduleResponse(
                 schedule.getId(),
-                schedule.getName(),
+                schedule.getUser().getId(),
+                schedule.getUser().getUsername(),
                 schedule.getTitle(),
                 schedule.getContent()
         );
@@ -88,14 +99,12 @@ public class ScheduleService {
     // 삭제
     @Transactional
     public void delete(Long scheduleId){
-        boolean existence = scheduleRepository.existsById(scheduleId);
-
         // 일정이 없는 경우
-        if (!existence) {
+        if (!scheduleRepository.existsById(scheduleId)) {
             throw new IllegalArgumentException("존재하지 않는 일정입니다.");
         }
 
-        // 일정이 있는 경우 -> 삭제 가능
+        // 일정이 있는 경우
         scheduleRepository.deleteById(scheduleId);
     }
 

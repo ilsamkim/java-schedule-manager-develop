@@ -1,7 +1,6 @@
 package com.schedulemanagerdevelop.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -12,38 +11,31 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@Table(name = "schedules")
-@NoArgsConstructor(access =AccessLevel.PROTECTED)
+@Table(name = "users")
+@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class Schedule {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    private String title;
-    private String content;
-
+    @Column(nullable = false)
+    private String username;
+    private String email;
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
-
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public Schedule(User user, String title, String content) {
-        this.user = user;
-        this.title = title;
-        this.content = content;
+    public User(String username, String email) {
+        this.username = username;
+        this.email = email;
     }
 
-    public void update(String title, String content) {
-        if (title != null) this.title = title;
-        if (content != null) this.content = content;
+    public void update (String username, String email){
+        if (username != null) this.username = username;
+        if (email != null) this.email = email;
     }
-
 }

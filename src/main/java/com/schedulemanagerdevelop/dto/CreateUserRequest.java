@@ -1,0 +1,10 @@
+package com.schedulemanagerdevelop.dto;
+
+import lombok.Getter;
+
+@Getter
+public class CreateUserRequest {
+
+    private String username;
+    private String email;
+}

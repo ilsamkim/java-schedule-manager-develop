@@ -6,13 +6,15 @@ import lombok.Getter;
 public class CreateScheduleResponse {
 
     private final Long id;
-    private final String name;
+    private final Long userId;
+    private final String username;
     private final String title;
     private final String content;
 
-    public CreateScheduleResponse(Long id, String name, String title, String content) {
+    public CreateScheduleResponse(Long id, Long userId, String username, String title, String content) {
         this.id = id;
-        this.name = name;
+        this.userId = userId;
+        this.username = username;
         this.title = title;
         this.content = content;
     }
