@@ -3,15 +3,13 @@ package com.schedulemanagerdevelop.dto;
 import lombok.Getter;
 
 @Getter
-public class CreateUserResponse {
+public class LoginResponse {
 
     private final Long id;
-    private final String username;
     private final String email;
 
-    public CreateUserResponse(Long id, String username, String email){
+    public LoginResponse(Long id, String email) {
         this.id = id;
-        this.username = username;
         this.email = email;
     }
 }

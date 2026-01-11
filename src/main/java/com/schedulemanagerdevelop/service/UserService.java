@@ -18,15 +18,14 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    // 저장
+    // 회원가입
     @Transactional
-    public CreateUserResponse save(CreateUserRequest request) {
-        // 비밀번호 길이 검증
-        validatePassword(request.getPassword());
-
-        if (userRepository.existsByEmail(request.getEmail())) {
+    public User register(RegisterRequest request) {
+        if(userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
+
+        validatePassword(request.getPassword());
 
         User user = new User(
                 request.getUsername(),
@@ -34,12 +33,20 @@ public class UserService {
                 request.getPassword()
         );
 
-        User savedUser = userRepository.save(user);
-        return new CreateUserResponse(
-                savedUser.getId(),
-                savedUser.getUsername(),
-                savedUser.getEmail()
-        );
+        return userRepository.save(user);
+    }
+
+    // 로그인
+    @Transactional(readOnly = true)
+    public User login(LoginRequest request){
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다."));
+
+        if (!user.getPassword().equals(request.getPassword())) {
+            throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
+        }
+
+        return user;
     }
 
     // 비밀번호 유효성 검사
