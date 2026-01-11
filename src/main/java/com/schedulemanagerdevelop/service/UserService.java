@@ -25,8 +25,6 @@ public class UserService {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
 
-        validatePassword(request.getPassword());
-
         User user = new User(
                 request.getUsername(),
                 request.getEmail(),
@@ -47,13 +45,6 @@ public class UserService {
         }
 
         return user;
-    }
-
-    // 비밀번호 유효성 검사
-    private void validatePassword(String password) {
-        if (password == null || password.length() < 8) {
-            throw new IllegalArgumentException("비밀번호는 8글자 이상이어야 합니다.");
-        }
     }
 
     // 단건 조회

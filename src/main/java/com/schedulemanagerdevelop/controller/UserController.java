@@ -2,9 +2,9 @@ package com.schedulemanagerdevelop.controller;
 
 import com.schedulemanagerdevelop.dto.*;
 import com.schedulemanagerdevelop.entity.User;
-import com.schedulemanagerdevelop.repository.UserRepository;
 import com.schedulemanagerdevelop.service.UserService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class UserController {
 
     // 회원가입
     @PostMapping("/register")
-    public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
         User user = userService.register(request);
         RegisterResponse response = new RegisterResponse(user.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -28,7 +28,7 @@ public class UserController {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request, HttpSession session) {
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request, HttpSession session) {
         User user = userService.login(request);
         SessionUser sessionUser = new SessionUser(user);
         session.setAttribute("loginUser", sessionUser);
@@ -64,7 +64,7 @@ public class UserController {
     @PutMapping("/users/{userId}")
     public ResponseEntity<UpdateUserResponse> updateUser(
             @PathVariable Long userId,
-            @RequestBody UpdateUserRequest request) {
+            @Valid @RequestBody UpdateUserRequest request) {
         UpdateUserResponse result = userService.update(userId, request);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
