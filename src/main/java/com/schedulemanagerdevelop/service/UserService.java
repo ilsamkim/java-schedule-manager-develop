@@ -1,10 +1,9 @@
 package com.schedulemanagerdevelop.service;
 
+import com.schedulemanagerdevelop.config.PasswordEncoder;
 import com.schedulemanagerdevelop.dto.*;
-import com.schedulemanagerdevelop.entity.Schedule;
 import com.schedulemanagerdevelop.entity.User;
 import com.schedulemanagerdevelop.repository.UserRepository;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +16,7 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // 회원가입
     @Transactional
@@ -25,10 +25,13 @@ public class UserService {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
 
+        // 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+
         User user = new User(
                 request.getUsername(),
                 request.getEmail(),
-                request.getPassword()
+                encodedPassword
         );
 
         return userRepository.save(user);
@@ -40,7 +43,7 @@ public class UserService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다."));
 
-        if (!user.getPassword().equals(request.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }
 
