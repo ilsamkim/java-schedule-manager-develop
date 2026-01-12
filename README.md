@@ -4,7 +4,9 @@
 ![ERD.PNG](ERD.PNG)
 
 User 1개 ↔ Schedule 다수 (OneToMany)
+
 User 1개 ↔ Comment 다수 (OneToMany)
+
 Schedule 1개 ↔ Comment 다수 (OneToMany)
 
 ## 2. API 명세
