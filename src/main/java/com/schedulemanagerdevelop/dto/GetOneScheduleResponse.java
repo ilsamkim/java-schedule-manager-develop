@@ -7,14 +7,14 @@ public class GetOneScheduleResponse {
 
     private final Long id;
     private final Long userId;
-    private final String name;
+    private final String username;
     private final String title;
     private final String content;
 
-    public GetOneScheduleResponse(Long id, Long userId, String name, String title, String content) {
+    public GetOneScheduleResponse(Long id, Long userId, String username, String title, String content) {
         this.id = id;
         this.userId = userId;
-        this.name = name;
+        this.username = username;
         this.title = title;
         this.content = content;
     }
