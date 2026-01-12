@@ -4,6 +4,8 @@ import com.schedulemanagerdevelop.dto.*;
 import com.schedulemanagerdevelop.service.ScheduleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,5 +53,14 @@ public class ScheduleController {
     public ResponseEntity<Void> deleteSchedules(@PathVariable Long scheduleId) {
         scheduleService.delete(scheduleId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    // 페이지네이션 조회
+    @GetMapping("/schedules/page")
+    public ResponseEntity<Page<GetSchedulePageResponse>> getSchedulesWithPaging(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<GetSchedulePageResponse> result = scheduleService.getSchedulesWithPaging(page, size);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }
